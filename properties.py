@@ -1,0 +1,315 @@
+import bpy
+from bpy import props
+from bpy.types import PropertyGroup
+
+
+class CustomProperties(PropertyGroup):
+    render_count: props.IntProperty(
+        name='Number of renders',
+        description='Specifies how many images Blender will render',
+        default=1,
+        min=1
+    )
+
+    render_checkbox: props.BoolProperty(
+        name='Render Images',
+        description='Check if you want images to render',
+        default=True
+    )
+
+    return_to_original: props.BoolProperty(
+        name='Return to original',
+        description='Return objects to their original positions with their original rotations',
+        default=False
+    )
+
+    # Object properties
+    object: props.PointerProperty(
+        type=bpy.types.Object,
+        name='Object',
+        description='Select the object'
+    )
+
+    object_min_pos_x: props.FloatProperty(
+        name='X',
+        description='The amount the object can move on the X axis in the negative direction',
+        default=-1.5,
+        subtype='DISTANCE',
+    )
+
+    object_min_pos_y: props.FloatProperty(
+        name='Y',
+        description='The amount the object can move on the X axis in the positive direction',
+        default=-1.5,
+        subtype='DISTANCE',
+    )
+
+    object_min_pos_z: props.FloatProperty(
+        name='Z',
+        description='The amount the object can move on the Y axis in the negative direction',
+        default=0.0,
+        subtype='DISTANCE',
+    )
+
+    object_max_pos_x: props.FloatProperty(
+        name='X',
+        description='The amount the object can move on the Y axis in the positive direction',
+        default=1.5,
+        subtype='DISTANCE',
+    )
+
+    object_max_pos_y: props.FloatProperty(
+        name='Y',
+        description='The amount the object can move on the Z axis in the negative direction',
+        default=1.5,
+        subtype='DISTANCE',
+    )
+
+    object_max_pos_z: props.FloatProperty(
+        name='Z',
+        description='The amount the object can move on the Z axis in the positive direction',
+        default=0.0,
+        subtype='DISTANCE',
+    )
+
+    object_min_rot_x: props.FloatProperty(
+        name='X',
+        description='The amount the object can rotate on it\'s local X axis in the negative direction',
+        default=0.0,
+        subtype='ANGLE',
+        min=-360.0,
+        max=360.0
+    )
+
+    object_min_rot_y: props.FloatProperty(
+        name='Y',
+        description='The amount the object can rotate on it\'s local Y axis in the negative direction',
+        default=0.0,
+        subtype='ANGLE',
+        min=-360.0,
+        max=360.0
+    )
+
+    object_min_rot_z: props.FloatProperty(
+        name='Z',
+        description='The amount the object can rotate on it\'s local Z axis in the negative direction',
+        default=0.0,
+        subtype='ANGLE',
+        min=-360.0,
+        max=360.0
+    )
+
+    object_max_rot_x: props.FloatProperty(
+        name='X',
+        description='The amount the object can rotate on it\'s local X axis in the positive direction',
+        default=0.0,
+        subtype='ANGLE',
+        min=-360.0,
+        max=360.0
+    )
+
+    object_max_rot_y: props.FloatProperty(
+        name='Y',
+        description='The amount the object can rotate on it\'s local Y axis in the positive direction',
+        default=0.0,
+        subtype='ANGLE',
+        min=-360.0,
+        max=360.0
+    )
+
+    object_max_rot_z: props.FloatProperty(
+        name='Z',
+        description='The amount the object can rotate on it\'s local Z axis in the positive direction',
+        default=6.2831853072,
+        subtype='ANGLE',
+        min=-360.0,
+        max=360.0
+    )
+
+    # Camera properties
+    camera: props.PointerProperty(
+        type=bpy.types.Camera,
+        name='Camera',
+        description='Select the camera'
+    )
+
+    camera_distance: props.FloatProperty(
+        name='Distance from object',
+        description='The Camera\'s distance from the object.\nIf set to 0, the camera won\'t change positions',
+        default=10.0,
+        subtype='DISTANCE',
+        min=0.0
+    )
+
+    camera_min_rot_x: props.FloatProperty(
+        name='X',
+        description='The amount the camera can rotate on it\'s local X axis in the negative direction.\n'
+                    'Set it to -90° to point the camera down, or 90° to point it up',
+        default=-0.3490658504,
+        subtype='ANGLE',
+        min=-90,
+        max=90
+    )
+
+    camera_min_rot_y: props.FloatProperty(
+        name='Y',
+        description='The amount the camera can rotate on it\'s local Y axis in the negative direction',
+        default=0.0,
+        subtype='ANGLE',
+        min=-360.0,
+        max=360.0
+    )
+
+    camera_min_rot_z: props.FloatProperty(
+        name='Z',
+        description='The amount the camera can rotate on it\'s local Z axis in the negative direction',
+        default=0.0,
+        subtype='ANGLE',
+        min=-360.0,
+        max=360.0
+    )
+
+    camera_max_rot_x: props.FloatProperty(
+        name='X',
+        description='The amount the camera can rotate on it\'s local X axis in the positive direction.\n'
+                    'Set it to 90° to point the camera up, or -90° to point it down',
+        default=-1.4835298642,
+        subtype='ANGLE',
+        min=-90.0,
+        max=90.0
+    )
+
+    camera_max_rot_y: props.FloatProperty(
+        name='Y',
+        description='The amount the camera can rotate on it\'s local Y axis in the positive direction',
+        default=6.2831853072,
+        subtype='ANGLE',
+        min=-360.0,
+        max=360.0
+    )
+
+    camera_max_rot_z: props.FloatProperty(
+        name='Z',
+        description='The amount the camera can rotate on it\'s local Z axis in the positive direction',
+        default=0.0,
+        subtype='ANGLE',
+        min=-360.0,
+        max=360.0
+    )
+
+    # Light properties
+    light: props.PointerProperty(
+        type=bpy.types.Light,
+        name='Light',
+        description='Select the light'
+    )
+
+    light_min_intensity: props.FloatProperty(
+        name='Min',
+        description='Light\'s minimum intensity.\n'
+                    'If both min and max are set to 0, the current intensity will be used',
+        default=1.0
+    )
+
+    light_max_intensity: props.FloatProperty(
+        name='Max',
+        description='Light\'s maximum intensity.\n'
+                    'If both min and max are set to 0, the current intensity will be used',
+        default=2.0
+    )
+
+    light_min_rot_x: props.FloatProperty(
+        name='X',
+        description='The amount the light can rotate on it\'s local X axis in the negative direction',
+        default=-1.308996939,
+        subtype='ANGLE',
+        min=-90.0,
+        max=90.0
+    )
+
+    light_min_rot_y: props.FloatProperty(
+        name='Y',
+        description='The amount the light can rotate on it\'s local Y axis in the negative direction',
+        default=-1.308996939,
+        subtype='ANGLE',
+        min=-90.0,
+        max=90.0
+    )
+
+    light_min_rot_z: props.FloatProperty(
+        name='Z',
+        description='The amount the light can rotate on it\'s local Z axis in the negative direction',
+        default=0.0,
+        subtype='ANGLE',
+        min=-360.0,
+        max=360.0
+    )
+
+    light_max_rot_x: props.FloatProperty(
+        name='X',
+        description='The amount the light can rotate on it\'s local X axis in the positive direction',
+        default=1.308996939,
+        subtype='ANGLE',
+        min=-90.0,
+        max=90.0
+    )
+
+    light_max_rot_y: props.FloatProperty(
+        name='Y',
+        description='The amount the light can rotate on it\'s local Y axis in the positive direction',
+        default=1.308996939,
+        subtype='ANGLE',
+        min=-90.0,
+        max=90.0
+    )
+
+    light_max_rot_z: props.FloatProperty(
+        name='Z',
+        description='The amount the light can rotate on it\'s local Z axis in the positive direction',
+        default=0.0,
+        subtype='ANGLE',
+        min=-360.0,
+        max=360.0
+    )
+
+    light_min_pos_x: props.FloatProperty(
+        name='X',
+        description='The amount the light can move on the X axis in the negative direction',
+        default=-5.0,
+        subtype='DISTANCE'
+    )
+
+    light_min_pos_y: props.FloatProperty(
+        name='Y',
+        description='The amount the light can move on the Y axis in the negative direction',
+        default=-5,
+        subtype='DISTANCE'
+    )
+
+    light_min_pos_z: props.FloatProperty(
+        name='Z',
+        description='The amount the light can move on the Z axis in the negative direction',
+        default=5.0,
+        subtype='DISTANCE',
+    )
+
+    light_max_pos_x: props.FloatProperty(
+        name='X',
+        description='The amount the light can move on the X axis in the positive direction',
+        default=5.0,
+        subtype='DISTANCE'
+    )
+
+    light_max_pos_y: props.FloatProperty(
+        name='Y',
+        description='The amount the light can move on the Y axis in the positive direction',
+        default=5.0,
+        subtype='DISTANCE'
+    )
+
+    light_max_pos_z: props.FloatProperty(
+        name='Z',
+        description='The amount the light can move on the Z axis in the positive direction',
+        default=5.0,
+        subtype='DISTANCE',
+    )

@@ -26,9 +26,9 @@ class Rendering(Operator):
 
     def execute(self, context):
 
-        obj, cam, light = utils.get_objects(context)
+        cam, light = utils.get_objects(context)
 
-        if obj is None or cam is None or light is None:
+        if cam is None or light is None:
             utils.show_message_box('Select all objects objects using the eyedroppers!',
                                    'Objects not found!', 'ERROR')
         else:
@@ -45,9 +45,9 @@ class GetCurrentSettings(Operator):
     """
 
     def execute(self, context):
-        obj, cam, light = utils.get_objects(context)
+        cam, light = utils.get_objects(context)
 
-        if obj is None or cam is None or light is None:
+        if cam is None or light is None:
             utils.show_message_box('Select all objects objects using the eyedroppers!',
                                    'Objects not found!', 'ERROR')
         else:
@@ -99,46 +99,6 @@ class SDG(Panel):
         layout.operator('render.get_current_settings', text='Get Current Settings')
         layout.operator('render.reset_default', text='Reset Default Values')
         layout.operator('render.zero_everything', text='Zero Everything')
-
-
-class ObjectPanel(Panel):
-    bl_idname = 'SDG_PT_Object'
-    bl_label = 'Object'
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'UI'
-    bl_category = 'Synthetic Data Generator'
-    bl_parent_id = 'SDG_PT_Panel'
-    bl_options = {'DEFAULT_CLOSED'}
-
-    def draw(self, context):
-        cust_prop = context.scene.custom_properties
-        layout = self.layout
-
-        layout.prop(cust_prop, 'object')
-
-        layout.label(text='Position Minimum:')
-        row = layout.row(align=True)
-        row.prop(cust_prop, 'object_min_pos_x')
-        row.prop(cust_prop, 'object_min_pos_y')
-        row.prop(cust_prop, 'object_min_pos_z')
-
-        layout.label(text="Position Maximum:")
-        row = layout.row(align=True)
-        row.prop(cust_prop, 'object_max_pos_x')
-        row.prop(cust_prop, 'object_max_pos_y')
-        row.prop(cust_prop, 'object_max_pos_z')
-
-        layout.label(text="Rotation Minimum:")
-        row = layout.row(align=True)
-        row.prop(cust_prop, 'object_min_rot_x')
-        row.prop(cust_prop, 'object_min_rot_y')
-        row.prop(cust_prop, 'object_min_rot_z')
-
-        layout.label(text="Rotation Maximum:")
-        row = layout.row(align=True)
-        row.prop(cust_prop, 'object_max_rot_x')
-        row.prop(cust_prop, 'object_max_rot_y')
-        row.prop(cust_prop, 'object_max_rot_z')
 
 
 class CameraPanel(Panel):
@@ -220,7 +180,6 @@ def register():
     register_class(CustomProperties)
     register_class(SDG)
     register_class(CameraPanel)
-    register_class(ObjectPanel)
     register_class(LightPanel)
     register_class(Rendering)
     register_class(ResetDefault)
@@ -236,6 +195,5 @@ def unregister():
     unregister_class(ResetDefault)
     unregister_class(Rendering)
     unregister_class(LightPanel)
-    unregister_class(ObjectPanel)
     unregister_class(CameraPanel)
     unregister_class(SDG)

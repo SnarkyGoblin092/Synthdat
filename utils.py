@@ -7,7 +7,6 @@ import os
 import copy
 from datetime import datetime
 
-obj = None
 cam = None
 light = None
 
@@ -15,14 +14,6 @@ cam_rot_x = 0.0
 cam_rot_y = 0.0
 cam_rot_z = 0.0
 cam_dist = 0.0
-
-obj_pos_x = 0.0
-obj_pos_y = 0.0
-obj_pos_z = 0.0
-
-obj_rot_x = 0.0
-obj_rot_y = 0.0
-obj_rot_z = 0.0
 
 light_obj = None
 
@@ -42,21 +33,18 @@ output_path = ''
 def get_objects(context):
     cust_props = context.scene.custom_properties
 
-    global obj
     global cam
     global light
 
-    if cust_props.object is not None:
-        obj = bpy.data.objects.get(cust_props.object.name)
     if cust_props.camera is not None:
         cam = bpy.data.objects.get(cust_props.camera.name)
     if cust_props.light is not None:
         light = cust_props.light
 
-    if obj is None or cam is None or light is None:
-        return None, None, None
+    if cam is None or light is None:
+        return None, None
     else:
-        return obj, cam, light
+        return cam, light
 
 
 def get_current_settings(context):
@@ -65,21 +53,7 @@ def get_current_settings(context):
     global light_obj
     light_obj = bpy.data.objects.get(light.name)
 
-    cust_props.object_min_rot_x = obj.rotation_euler[0]
-    cust_props.object_min_rot_y = obj.rotation_euler[1]
-    cust_props.object_min_rot_z = obj.rotation_euler[2]
-    cust_props.object_max_rot_x = obj.rotation_euler[0]
-    cust_props.object_max_rot_y = obj.rotation_euler[1]
-    cust_props.object_max_rot_z = obj.rotation_euler[2]
-
-    cust_props.object_min_pos_x = obj.location[0]
-    cust_props.object_min_pos_y = obj.location[1]
-    cust_props.object_min_pos_z = obj.location[2]
-    cust_props.object_max_pos_x = obj.location[0]
-    cust_props.object_max_pos_y = obj.location[1]
-    cust_props.object_max_pos_z = obj.location[2]
-
-    cust_props.camera_distance = np.linalg.norm(np.array(cam.location)-np.array(obj.location))
+    cust_props.camera_distance = np.linalg.norm(np.array(cam.location)-np.array([0, 0, 0]))
 
     cust_props.camera_min_rot_x = cam.rotation_euler[0]
     cust_props.camera_min_rot_y = cam.rotation_euler[1]
@@ -109,20 +83,10 @@ def get_current_settings(context):
 def zero_everything(context):
     cust_props = context.scene.custom_properties
 
-    cust_props.object = None
-    cust_props.object_min_rot_x = 0.0
-    cust_props.object_min_rot_y = 0.0
-    cust_props.object_min_rot_z = 0.0
-    cust_props.object_max_rot_x = 0.0
-    cust_props.object_max_rot_y = 0.0
-    cust_props.object_max_rot_z = 0.0
-
-    cust_props.object_min_pos_x = 0.0
-    cust_props.object_min_pos_y = 0.0
-    cust_props.object_min_pos_z = 0.0
-    cust_props.object_max_pos_x = 0.0
-    cust_props.object_max_pos_y = 0.0
-    cust_props.object_max_pos_z = 0.0
+    global cam
+    global light
+    cam = None
+    light = None
 
     cust_props.camera = None
     cust_props.camera_distance = 0.0
@@ -155,21 +119,6 @@ def zero_everything(context):
 
 def reset_default(context):
     cust_props = context.scene.custom_properties
-
-    cust_props.object = None
-    cust_props.object_min_rot_x = 0.0
-    cust_props.object_min_rot_y = 0.0
-    cust_props.object_min_rot_z = 0.0
-    cust_props.object_max_rot_x = 0.0
-    cust_props.object_max_rot_y = 0.0
-    cust_props.object_max_rot_z = 6.2831853072
-
-    cust_props.object_min_pos_x = -1.5
-    cust_props.object_min_pos_y = -1.5
-    cust_props.object_min_pos_z = 0.0
-    cust_props.object_max_pos_x = 1.5
-    cust_props.object_max_pos_y = 1.5
-    cust_props.object_max_pos_z = 0.0
 
     cust_props.camera = None
     cust_props.camera_distance = 10.0
@@ -231,42 +180,6 @@ def set_variables(cust_props):
             cam_rot_z = 0.0
     else:
         cam_rot_z = random.uniform(cust_props.camera_min_rot_z, cust_props.camera_max_rot_z)
-
-    global obj_pos_x
-    if cust_props.object_min_pos_x == 0.0 and cust_props.object_max_pos_x == 0.0:
-        obj_pos_x = obj.location[0]
-    else:
-        obj_pos_x = random.uniform(cust_props.object_min_pos_x, cust_props.object_max_pos_x)
-
-    global obj_pos_y
-    if cust_props.object_min_pos_y == 0.0 and cust_props.object_max_pos_y == 0.0:
-        obj_pos_y = obj.location[1]
-    else:
-        obj_pos_y = random.uniform(cust_props.object_min_pos_y, cust_props.object_max_pos_y)
-
-    global obj_pos_z
-    if cust_props.object_min_pos_z == 0.0 and cust_props.object_max_pos_z == 0.0:
-        obj_pos_z = obj.location[2]
-    else:
-        obj_pos_z = random.uniform(cust_props.object_min_pos_z, cust_props.object_max_pos_z)
-
-    global obj_rot_x
-    if cust_props.object_min_rot_x == 0.0 and cust_props.object_min_rot_x == 0.0:
-        obj_rot_x = obj.rotation_euler[0]
-    else:
-        obj_rot_x = random.uniform(cust_props.object_min_rot_x, cust_props.object_max_rot_x)
-
-    global obj_rot_y
-    if cust_props.object_min_rot_y == 0.0 and cust_props.object_min_rot_y == 0.0:
-        obj_rot_y = obj.rotation_euler[1]
-    else:
-        obj_rot_y = random.uniform(cust_props.object_min_rot_y, cust_props.object_max_rot_y)
-
-    global obj_rot_z
-    if cust_props.object_min_rot_z == 0.0 and cust_props.object_min_rot_z == 0.0:
-        obj_rot_z = obj.rotation_euler[2]
-    else:
-        obj_rot_z = random.uniform(cust_props.object_min_rot_z, cust_props.object_max_rot_z)
 
     global light_obj
     light_obj = bpy.data.objects.get(light.name)
@@ -519,13 +432,13 @@ def rotate_and_render(context):
     for scene in bpy.data.scenes:
         scene.render.engine = 'CYCLES'
 
+    bpy.context.scene.frame_set(1)
+
     global light_obj
     light_obj = bpy.data.objects.get(light.name)
 
-    obj_loc = copy.deepcopy(obj.location)
     cam_loc = copy.deepcopy(cam.location)
     light_loc = copy.deepcopy(light_obj.location)
-    obj_rot = copy.deepcopy(obj.rotation_euler)
     cam_rot = copy.deepcopy(cam.rotation_euler)
     light_rot = copy.deepcopy(light_obj.rotation_euler)
 
@@ -539,7 +452,7 @@ def rotate_and_render(context):
         set_variables(cust_props)
 
         if cam_dist != 0.0:
-            cam.location = obj.location
+            cam.location = mu.Vector((0, 0, 0))
             cam.rotation_euler = [math.radians(90) + cam_rot_x, cam_rot_z, cam_rot_y]
 
             bpy.ops.object.select_all(action='DESELECT')
@@ -548,13 +461,8 @@ def rotate_and_render(context):
 
         light.energy = light_intensity
 
-        if obj_pos_x != obj.location[0] or obj_pos_y != obj.location[1] or obj_pos_z != obj.location[2]:
-            obj.location = np.add(obj_loc, [obj_pos_x, obj_pos_y, obj_pos_z])
-
-        obj.rotation_euler = (obj_rot_x, obj_rot_y, obj_rot_z)
-
         if light_obj.location[0] != light_pos_x or light_obj.location[1] != light_pos_y or light_obj.location[2] != light_pos_z:
-            light_obj.location = np.add(obj_loc, [light_pos_x, light_pos_y, light_pos_z])
+            light_obj.location = np.add([0, 0, 0], [light_pos_x, light_pos_y, light_pos_z])
 
         if light_obj.rotation_euler[0] != light_rot_x or light_obj.rotation_euler[1] != light_rot_y or light_obj.rotation_euler[2] != light_rot_z:
             light_obj.rotation_euler = (light_rot_x, light_rot_y, light_rot_z)
@@ -570,16 +478,13 @@ def rotate_and_render(context):
             for o in bpy.data.objects:
                 if o.type == 'MESH':
                     os.rename(output_path + "id_masks/{}/{}0001.png".format(o.name, o.name),
-                              output_path + "id_masks/{}/{}{}.png".format(o.name, o.name, i + 1))
+                              output_path + "id_masks/{}/{}_{}.png".format(o.name, o.name, i + 1))
                     os.rename(output_path + "mask_visib/{}/{}0001.png".format(o.name, o.name),
-                              output_path + "mask_visib/{}/{}{}.png".format(o.name, o.name, i + 1))
-
-        obj.location = obj_loc
+                              output_path + "mask_visib/{}/{}_{}.png".format(o.name, o.name, i + 1))
 
     if cust_props.return_to_original:
         cam.location = cam_loc
         light_obj.location = light_loc
-        obj.rotation_euler = obj_rot
         cam.rotation_euler = cam_rot
         light_obj.rotation_euler = light_rot
         light.energy = light_int

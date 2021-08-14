@@ -9,7 +9,7 @@ Synthdat makes configuration much easier, you only have to load models once, the
   <img src="https://github.com/SnarkyGoblin092/Synthdat/blob/dev/img/addon.png" height="200" width="auto">
 </p>
 
-The scope of the project is to make Blender able to:
+The final goal of the project is to make Blender able to:
 
  - render images, masks, depth masks
  - create annotations for each object

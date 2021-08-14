@@ -6,7 +6,7 @@ Synthdat makes configuration much easier, you only have to load models once, the
 <p align="center">
   <b>The addon panel:</b>
   <br><br>
-  <img src="https://github.com/SnarkyGoblin092/Synthdat/blob/dev/img/addon.png" height="200" width="auto">
+  <img src="https://github.com/SnarkyGoblin092/Synthdat/blob/main/img/addon.png" height="200" width="auto">
 </p>
 
 The final goal of the project is to make Blender able to:

@@ -4,6 +4,7 @@ from bpy.types import PropertyGroup
 
 
 class CustomProperties(PropertyGroup):
+
     render_count: props.IntProperty(
         name='Number of renders',
         description='Specifies how many images Blender will render',
@@ -21,6 +22,14 @@ class CustomProperties(PropertyGroup):
         name='Return to original',
         description='Return objects to their original positions with their original rotations',
         default=False
+    )
+
+    depth_max_distance: props.FloatProperty(
+        name='Max Distance',
+        description='The depth map\'s maximum distance. If both min and max values are 0, min will be 0 and max will be 100',
+        subtype='DISTANCE',
+        default=100.0,
+        min=0.0
     )
 
     # Camera properties
@@ -95,10 +104,24 @@ class CustomProperties(PropertyGroup):
     )
 
     # Light properties
-    light: props.PointerProperty(
-        type=bpy.types.Light,
-        name='Light',
-        description='Select the light'
+
+    point_lights: props.BoolProperty(
+        name='Point Lights',
+        description='Generate point lights',
+        default=False
+    )
+
+    sun_lights: props.BoolProperty(
+        name='Sun Lights',
+        description='Generate sun lights',
+        default=False
+    )
+
+    lights_count: props.IntProperty(
+        name='Lights Count',
+        description='Number of lights to be generated',
+        default=1,
+        min=1
     )
 
     light_min_intensity: props.FloatProperty(

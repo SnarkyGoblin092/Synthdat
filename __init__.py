@@ -1,15 +1,14 @@
 import bpy
 from bpy.types import Operator, Panel
 from bpy.utils import register_class, unregister_class
-
 from . import utils
 from .properties import CustomProperties
 
-
+# Information about the addon
 bl_info = {
     'name': 'Synthetic Data Generator',
     'author': 'Orsós Emil István',
-    'version': (1, 0),
+    'version': (0, 2),
     'blender': (2, 80, 0),
     'location': '3D View > Toolbar > Synthetic Data Generator',
     'description': 'Generates synthetic images for machine learning.'
@@ -26,9 +25,9 @@ class Rendering(Operator):
 
     def execute(self, context):
 
-        cam, light = utils.get_objects(context)
+        cam = utils.get_objects(context)
 
-        if cam is None or light is None:
+        if cam is None:
             utils.show_message_box('Select all objects objects using the eyedroppers!',
                                    'Objects not found!', 'ERROR')
         else:
@@ -41,13 +40,13 @@ class GetCurrentSettings(Operator):
     bl_idname = 'render.get_current_settings'
     bl_label = 'Get Current Settings'
     """ 
-        Get the current settings of all selected objects.
+        Get the current settings of all eyedropped objects.
     """
 
     def execute(self, context):
-        cam, light = utils.get_objects(context)
+        cam = utils.get_objects(context)
 
-        if cam is None or light is None:
+        if cam is None:
             utils.show_message_box('Select all objects objects using the eyedroppers!',
                                    'Objects not found!', 'ERROR')
         else:
@@ -80,6 +79,7 @@ class ResetDefault(Operator):
         return {'FINISHED'}
 
 
+# The main panel of the addon
 class SDG(Panel):
     bl_idname = 'SDG_PT_Panel'
     bl_label = 'Synthetic Data Generator'
@@ -99,8 +99,13 @@ class SDG(Panel):
         layout.operator('render.get_current_settings', text='Get Current Settings')
         layout.operator('render.reset_default', text='Reset Default Values')
         layout.operator('render.zero_everything', text='Zero Everything')
+        layout.row().label(text='')
+        layout.row().label(text='Depth map distance settings')
+        row = layout.row(align=True)
+        row.prop(cust_prop, 'depth_max_distance')
 
 
+# The camera's sub-panel on the main panel
 class CameraPanel(Panel):
     bl_idname = 'SDG_PT_Camera'
     bl_label = 'Camera'
@@ -131,6 +136,7 @@ class CameraPanel(Panel):
         row.prop(cust_prop, 'camera_max_rot_z')
 
 
+# The light's sub-panel on the main panel
 class LightPanel(Panel):
     bl_idname = 'SDG_PT_Light'
     bl_label = 'Light'
@@ -144,7 +150,10 @@ class LightPanel(Panel):
         cust_prop = context.scene.custom_properties
         layout = self.layout
 
-        layout.prop(cust_prop, 'light')
+        layout.label(text='Generate:')
+        layout.prop(cust_prop, 'point_lights')
+        layout.prop(cust_prop, 'sun_lights')
+        layout.prop(cust_prop, 'lights_count')
 
         layout.label(text='Power:')
         row = layout.row(align=True)
@@ -176,6 +185,7 @@ class LightPanel(Panel):
         row.prop(cust_prop, 'light_max_rot_z')
 
 
+# Register classes
 def register():
     register_class(CustomProperties)
     register_class(SDG)
@@ -188,6 +198,7 @@ def register():
     bpy.types.Scene.custom_properties = bpy.props.PointerProperty(type=CustomProperties)
 
 
+# Unregister classes
 def unregister():
     unregister_class(CustomProperties)
     unregister_class(GetCurrentSettings)
@@ -197,3 +208,4 @@ def unregister():
     unregister_class(LightPanel)
     unregister_class(CameraPanel)
     unregister_class(SDG)
+

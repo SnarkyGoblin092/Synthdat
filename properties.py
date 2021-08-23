@@ -12,12 +12,6 @@ class CustomProperties(PropertyGroup):
         min=1
     )
 
-    render_checkbox: props.BoolProperty(
-        name='Render Images',
-        description='Check if you want images to render',
-        default=True
-    )
-
     return_to_original: props.BoolProperty(
         name='Return to original',
         description='Return objects to their original positions with their original rotations',

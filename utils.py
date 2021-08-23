@@ -5,6 +5,7 @@ import mathutils as mu
 import random
 import os
 from datetime import datetime
+from . import output
 
 cam = None
 
@@ -273,7 +274,6 @@ def set_variables(cust_props):
         light_rot_z = random.uniform(cust_props.light_min_rot_z, cust_props.light_max_rot_z)
 
 
-
 # Show a message box
 def show_message_box(message='', title='Message Box', icon='NONE'):
     def draw(self, context):
@@ -306,7 +306,7 @@ def create_node_tree(per_row=4):
     y = 0
     for i in range(0, len(objects.items())):
         if objects[i].type == 'MESH':
-            if objects[i].name.find("Plane") == -1 and objects[i].name.find("plane") == -1:
+            if objects[i].name[0] != '_':
                 objects[i].pass_index = y + 1
                 render_layers.append(bpy.context.scene.node_tree.nodes.new('CompositorNodeRLayers'))
                 id_masks.append(bpy.context.scene.node_tree.nodes.new('CompositorNodeIDMask'))
@@ -325,12 +325,12 @@ def create_node_tree(per_row=4):
         outputs[i].file_slots[0].path = "{}####".format(outputs[i].name)
         outputs[i].format.color_mode = 'BW'
         outputs[i].format.file_format = 'PNG'
-        outputs[i].format.compression = 0
-        cut_outputs[i].base_path = output_path + "mask_visib/{}/".format(outputs[i].name, outputs[i].name)
+        outputs[i].format.compression = 100
+        cut_outputs[i].base_path = output_path + "mask_visib/{}/".format(outputs[i].name)
         cut_outputs[i].file_slots[0].path = "{}####".format(outputs[i].name)
         cut_outputs[i].format.color_mode = 'BW'
         cut_outputs[i].format.file_format = 'PNG'
-        cut_outputs[i].format.compression = 0
+        cut_outputs[i].format.compression = 100
 
     render_layers.append(bpy.context.scene.node_tree.nodes.new('CompositorNodeRLayers'))
     denoise = bpy.context.scene.node_tree.nodes.new('CompositorNodeDenoise')
@@ -341,7 +341,7 @@ def create_node_tree(per_row=4):
     y = 0
     for i in range(0, len(objects.items())):
         if objects[i].type == 'MESH':
-            if objects[i].name.find("Plane") == -1 and objects[i].name.find("plane") == -1:
+            if objects[i].name[0] != '_':
                 render_layers[y].layer = objects[i].name
                 bpy.context.scene.node_tree.links.new(render_layers[y].outputs['IndexOB'], id_masks[y].inputs[0])
                 bpy.context.scene.node_tree.links.new(id_masks[y].outputs[0], outputs[y].inputs['Image'])
@@ -368,7 +368,7 @@ def create_node_tree(per_row=4):
     depth_map_output.format.color_mode = 'BW'
     depth_map_output.format.file_format = 'PNG'
     depth_map_output.format.color_depth = '16'
-    depth_map_output.format.compression = 0
+    depth_map_output.format.compression = 100
     depth_map_output.base_path = output_path + "depth_map/"
     depth_map_output.file_slots[0].path = "Image####"
     depth_map_output.location = mu.Vector((740, 205))
@@ -457,7 +457,7 @@ def generate_light(i, decider):
         light_intensity = random.uniform(cust_props.light_min_intensity, cust_props.light_max_intensity)
 
     if decider < 0.5:
-        light_data = bpy.data.lights.new(name="l{}".format(i + 1), type='POINT')
+        light_data = bpy.data.lights.new(name="light_{}".format(i + 1), type='POINT')
         light_data.energy = light_intensity * 10
         light_data.shadow_soft_size = 1
         light_object = bpy.data.objects.new(name=light_data.name, object_data=light_data)
@@ -468,7 +468,7 @@ def generate_light(i, decider):
             random.uniform(cust_props.light_min_pos_z, cust_props.light_max_pos_z)
         ))
     else:
-        light_data = bpy.data.lights.new(name="l{}".format(i + 1), type='SUN')
+        light_data = bpy.data.lights.new(name="light_{}".format(i + 1), type='SUN')
         shifted_energy = light_intensity
         while shifted_energy > 1:
             shifted_energy /= 10
@@ -523,7 +523,7 @@ def separate_objects_to_render_layers():
 
     for o in objects:
         if o.type == 'MESH':
-            if o.name.find("Plane") == -1 and o.name.find("plane") == -1:
+            if o.name[0] != '_':
                 if collections.find(o.name) == -1:
                     col = collections.new(o.name)
                     bpy.context.scene.collection.children.link(col)
@@ -539,20 +539,20 @@ def separate_objects_to_render_layers():
 
     for o in objects:
         if o.type == 'MESH':
-            if o.name.find("Plane") == -1 and o.name.find("plane") == -1:
+            if o.name[0] != '_':
                 if layers.find(o.name) == -1:
                     layers.new(o.name)
 
     for o in objects:
         if o.type == 'MESH':
-            if o.name.find("Plane") == -1 and o.name.find("plane") == -1:
+            if o.name[0] != '_':
                 for col in collections:
                     if o.name != col.name:
                         layers[o.name].layer_collection.children[o.name].exclude = True
 
     for o in objects:
         if o.type == 'MESH':
-            if o.name.find("Plane") == -1 and o.name.find("plane") == -1:
+            if o.name[0] != '_':
                 for col in collections:
                     if o.name != col.name:
                         layers[o.name].layer_collection.children[col.name].exclude = True
@@ -571,6 +571,9 @@ def save_positions():
 def rotate_and_render(context):
     cust_props = context.scene.custom_properties
 
+    for obj in bpy.data.objects:
+        obj.pass_index = 0
+
     if cust_props.return_to_original:
         save_current_objects_in_scene()
 
@@ -587,8 +590,61 @@ def rotate_and_render(context):
     separate_objects_to_render_layers()
     create_node_tree()
 
-    for i in range(cust_props.render_count):
+    os.mkdir(output_path)
 
+    with open(output_path + "data.json", "a") as file:
+
+        file.write("{\n")
+
+        for i in range(cust_props.render_count):
+
+            set_variables(cust_props)
+            create_lights()
+
+            if cam_dist != 0.0:
+                cam.location = mu.Vector((0, 0, 0))
+                cam.rotation_euler = [math.radians(90) + cam_rot_x, cam_rot_z, cam_rot_y]
+
+                bpy.ops.object.select_all(action='DESELECT')
+                cam.select_set(True)
+                bpy.ops.transform.translate(value=[0, 0, cam_dist], orient_type='LOCAL')
+
+            context.scene.render.filepath = os.path.expanduser(
+                "~/Desktop/Renders/{}/images/image{}{}".format(dt_string, i+1, bpy.context.scene.render.file_extension)
+            )
+
+            print("Rendering image{}{}...".format(i+1, bpy.context.scene.render.file_extension))
+            bpy.ops.render.render(write_still=True)
+
+            for o in bpy.data.objects:
+                if o.type == 'MESH':
+                    if o.name[0] != '_':
+                        os.rename(output_path + "id_masks/{}/{}0001.png".format(o.name, o.name),
+                                  output_path + "id_masks/{}/{}_{}.png".format(o.name, o.name, i + 1))
+                        os.rename(output_path + "mask_visib/{}/{}0001.png".format(o.name, o.name),
+                                  output_path + "mask_visib/{}/{}_{}.png".format(o.name, o.name, i + 1))
+
+            os.rename(output_path + "depth_map/Image0001.png",
+                      output_path + "depth_map/depth_map{}.png".format(i+1))
+
+            last = (i == cust_props.render_count - 1)
+            output.add_to_scene_json(last, file, i, bpy.data.objects, cam)
+
+        file.write("}")
+
+    # scale = get_scale(context)
+
+    if cust_props.return_to_original:
+        reset_saved_objects()
+
+
+def reposition(context):
+    cust_props = context.scene.custom_properties
+
+    if cust_props.return_to_original:
+        save_current_objects_in_scene()
+
+    for i in range(cust_props.render_count):
         set_variables(cust_props)
         create_lights()
 
@@ -599,27 +655,6 @@ def rotate_and_render(context):
             bpy.ops.object.select_all(action='DESELECT')
             cam.select_set(True)
             bpy.ops.transform.translate(value=[0, 0, cam_dist], orient_type='LOCAL')
-
-        if cust_props.render_checkbox:
-            context.scene.render.filepath = os.path.expanduser(
-                "~/Desktop/Renders/{}/images/image{}{}".format(dt_string, i+1, bpy.context.scene.render.file_extension)
-            )
-
-            print("Rendering image{}{}...".format(i+1, bpy.context.scene.render.file_extension))
-            bpy.ops.render.render(write_still=True)
-
-            for o in bpy.data.objects:
-                if o.type == 'MESH':
-                    if o.name.find("Plane") == -1 and o.name.find("plane") == -1:
-                        os.rename(output_path + "id_masks/{}/{}0001.png".format(o.name, o.name),
-                                  output_path + "id_masks/{}/{}_{}.png".format(o.name, o.name, i + 1))
-                        os.rename(output_path + "mask_visib/{}/{}0001.png".format(o.name, o.name),
-                                  output_path + "mask_visib/{}/{}_{}.png".format(o.name, o.name, i + 1))
-
-            os.rename(output_path + "depth_map/Image0001.png",
-                      output_path + "depth_map/depth_map{}.png".format(i+1))
-
-    # scale = get_scale(context)
 
     if cust_props.return_to_original:
         reset_saved_objects()

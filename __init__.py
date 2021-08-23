@@ -36,6 +36,26 @@ class Rendering(Operator):
         return {'FINISHED'}
 
 
+class Reposition(Operator):
+    bl_idname = 'render.reposition'
+    bl_label = 'Reposition'
+    """ 
+        Repositions objects in the scene with random lighting.
+    """
+
+    def execute(self, context):
+
+        cam = utils.get_objects(context)
+
+        if cam is None:
+            utils.show_message_box('Select all objects objects using the eyedroppers!',
+                                   'Objects not found!', 'ERROR')
+        else:
+            utils.reposition(context)
+
+        return {'FINISHED'}
+
+
 class GetCurrentSettings(Operator):
     bl_idname = 'render.get_current_settings'
     bl_label = 'Get Current Settings'
@@ -92,9 +112,9 @@ class SDG(Panel):
         layout = self.layout
 
         layout.prop(cust_prop, 'render_count')
-        layout.prop(cust_prop, 'render_checkbox', text='Render Images')
         layout.prop(cust_prop, 'return_to_original', text='Return To Original')
-        layout.operator('render.render_images', text='Start')
+        layout.operator('render.reposition', text='Reposition')
+        layout.operator('render.render_images', text='Render')
         layout.row().label(text='')
         layout.operator('render.get_current_settings', text='Get Current Settings')
         layout.operator('render.reset_default', text='Reset Default Values')
@@ -192,6 +212,7 @@ def register():
     register_class(CameraPanel)
     register_class(LightPanel)
     register_class(Rendering)
+    register_class(Reposition)
     register_class(ResetDefault)
     register_class(ZeroEverything)
     register_class(GetCurrentSettings)
@@ -204,6 +225,7 @@ def unregister():
     unregister_class(GetCurrentSettings)
     unregister_class(ZeroEverything)
     unregister_class(ResetDefault)
+    unregister_class(Reposition)
     unregister_class(Rendering)
     unregister_class(LightPanel)
     unregister_class(CameraPanel)

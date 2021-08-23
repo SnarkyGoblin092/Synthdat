@@ -8,7 +8,7 @@ from .properties import CustomProperties
 bl_info = {
     'name': 'Synthetic Data Generator',
     'author': 'Orsós Emil István',
-    'version': (0, 2),
+    'version': (0, 3),
     'blender': (2, 80, 0),
     'location': '3D View > Toolbar > Synthetic Data Generator',
     'description': 'Generates synthetic images for machine learning.'

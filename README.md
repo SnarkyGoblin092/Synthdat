@@ -1,4 +1,7 @@
 # Synthdat - Synthetic Data Generator addon for Blender
+
+$\color{Red}\large{\textsf{*** This project was made for a school project and has since been abandoned. ***}}$
+
 This addon is being made to make Blender able to generate synthetic data for neural networks and learning algorithms. There aren't many if any Blender addons for synthetic data generation. Most softwares developed for this reason work in the backround without even opening the Blender GUI. This makes configuration hard (.json, .yml, etc files), rendering slow (always opening blender and loading models all over again) and the models have to have a specific name.
 <br><br>
 Synthdat makes configuration much easier, you only have to load models once, they can have any name because the code doesn't work on an object name basis.
@@ -6,7 +9,7 @@ Synthdat makes configuration much easier, you only have to load models once, the
 <p align="center">
   <b>The addon panel:</b>
   <br><br>
-  <img src="https://github.com/SnarkyGoblin092/Synthdat/blob/main/img/addon.png" height="200" width="auto">
+  <img src="https://github.com/SnarkyGoblin092/Synthdat/blob/main/img/addon.png" height="1000" width="auto">
 </p>
 
 The final goal of the project is to make Blender able to:
